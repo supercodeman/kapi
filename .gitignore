@@ -26,3 +26,6 @@ web/dist/
 
 # 临时文件
 tmp/
+
+ .claude/
+ .superpowers/
