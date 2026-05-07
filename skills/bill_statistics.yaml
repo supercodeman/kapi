@@ -1,0 +1,27 @@
+name: bill_statistics
+description: "查看消费分类汇总、消费偏好分析。例如：'这个月花了多少'、'分析我的消费偏好'"
+page: ["账单详情", "报表", "*"]
+type: read
+mode: workflow
+version: "2.0.0"
+trigger: "用户询问消费统计、同比环比、分类占比、消费趋势、总支出。示例：'这个月花了多少'、'餐饮占比多少'、'和上个月比怎么样'"
+mandatory_tool: get_category_summary
+forbidden_tools: ["list_bills"]
+forbidden_without_tool: ["总共花了", "一共花了", "消费了", "支出"]
+reply_guide: "所有金额和百分比必须来自 Tool 返回，绝不自己计算"
+params:
+  - name: time_range
+    type: string
+    required: false
+    desc: "时间范围，如本月、上月、最近三个月"
+  - name: category
+    type: string
+    required: false
+    desc: "分类筛选"
+  - name: compare_type
+    type: string
+    required: false
+    desc: "对比类型：同比/环比"
+prompt_template: |
+  调用 get_category_summary 或 get_total_spent 或 get_month_comparison 工具获取统计数据。
+  绝不自己对账单金额求和，所有数字必须来自工具返回。

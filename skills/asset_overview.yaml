@@ -1,0 +1,17 @@
+name: asset_overview
+description: "查看资产概况、净资产、负债情况。例如：'我的资产概况'、'净资产多少'"
+page: ["资产管理", "*"]
+type: read
+mode: workflow
+version: "2.0.0"
+trigger: "用户询问资产状况、净资产、现金流、负债情况。示例：'我有多少资产'、'净资产是多少'、'负债多少'"
+mandatory_tool: list_assets
+forbidden_without_tool: ["净资产", "总资产", "余额"]
+reply_guide: "所有资产数字必须来自 Tool 返回"
+params:
+  - name: asset_type
+    type: string
+    required: false
+    desc: "资产类型筛选：cash/credit/investment/debt"
+prompt_template: |
+  调用 list_assets 工具获取资产数据。所有数字必须来自工具返回。

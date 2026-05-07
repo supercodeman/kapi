@@ -1,0 +1,29 @@
+name: bill_manage
+description: "修改或删除已有账单。例如：'把星巴克那笔改成40元'、'删掉昨天的午饭'"
+page: ["账单详情", "*"]
+type: write
+mode: workflow
+version: "2.0.0"
+trigger: "用户要求修改或删除已有账单。示例：'把那笔改成50'、'删掉昨天的账单'、'修改上次的记录'"
+mandatory_tool: update_bill
+forbidden_without_tool: ["已修改", "已删除", "改好了", "删好了"]
+reply_guide: "基于 Tool 返回的 message 确认操作结果"
+params:
+  - name: bill_id
+    type: integer
+    required: true
+    desc: "账单ID"
+  - name: action
+    type: string
+    required: true
+    desc: "操作类型：update/delete"
+  - name: amount
+    type: float
+    required: false
+    desc: "修改后的金额"
+  - name: category
+    type: string
+    required: false
+    desc: "修改后的分类"
+prompt_template: |
+  根据用户意图调用 update_bill 或 delete_bill 工具。必须等 Tool 返回成功后才能确认操作。

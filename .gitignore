@@ -1,0 +1,28 @@
+# 二进制
+kapi_server
+*.exe
+
+# 配置（含密钥）
+config.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+vendor/
+
+# Node
+web/node_modules/
+web/dist/
+
+# 日志
+*.log
+
+# 临时文件
+tmp/

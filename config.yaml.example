@@ -1,0 +1,36 @@
+# 咔皮记账 AI 助手 — 配置模板
+# 复制此文件为 config.yaml 并填入实际值
+# 优先级：环境变量 > config.yaml > 默认值
+
+server:
+  port: "8080"
+  gin_mode: debug    # debug / release
+
+mysql:
+  dsn: "root:your_password@tcp(localhost:3306)/kapi?charset=utf8mb4&parseTime=True&loc=Local"
+
+redis:
+  addr: "localhost:6379"
+  password: ""
+  db: 0
+
+milvus:
+  addr: "localhost:19530"
+
+jwt:
+  secret: "change-this-to-a-random-string"
+  expire_hours: 168   # Token 有效期（小时）
+
+# LLM 配置（OpenAI 兼容接口）
+# 当前使用 MiniMax M2.7，也可替换为其他兼容 OpenAI 格式的模型
+llm:
+  base_url: "https://api.minimax.chat/v1/"
+  api_key: "your-llm-api-key"
+  model: "MiniMax-M2.7"
+
+# Embedding 配置（OpenAI 兼容接口）
+# 当前使用通义千问 text-embedding-v3，用于记忆系统向量检索
+embedding:
+  base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1/"
+  api_key: "your-embedding-api-key"
+  model: "text-embedding-v3"

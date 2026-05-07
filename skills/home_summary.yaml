@@ -1,0 +1,18 @@
+name: home_summary
+description: "首页消费概览，包括今日消费、本月消费、预算执行摘要"
+page: ["首页"]
+type: read
+mode: workflow
+version: "2.0.0"
+trigger: "用户在首页询问今日/本月消费概况、整体财务状态。示例：'今天花了多少'、'本月消费概况'"
+mandatory_tool: get_total_spent
+forbidden_tools: ["list_bills"]
+forbidden_without_tool: ["花了", "消费了", "支出"]
+reply_guide: "所有金额必须来自 Tool 返回"
+params:
+  - name: time_range
+    type: string
+    required: false
+    desc: "时间范围：今天/本周/本月"
+prompt_template: |
+  调用 get_total_spent 或 get_category_summary 工具获取消费概况。所有数字必须来自工具返回。

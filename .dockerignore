@@ -1,0 +1,36 @@
+# 版本控制
+.git
+.gitignore
+
+# IDE 和编辑器
+.idea
+.vscode
+*.swp
+*.swo
+
+# Docker 相关（避免递归）
+docker-compose.yml
+Dockerfile
+
+# 文档和配置
+docs/
+README.md
+LICENSE
+.claude/
+
+# 本地环境文件
+.env
+.env.*
+
+# 构建产物
+*.exe
+*.dll
+*.so
+*.dylib
+
+# 测试缓存
+*_test.go
+
+# 临时文件
+tmp/
+*.log

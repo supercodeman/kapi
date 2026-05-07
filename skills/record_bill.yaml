@@ -1,0 +1,35 @@
+name: record_bill
+description: "自然语言记账，支持收入和支出。例如：'午饭30元'、'收到工资8000'、'昨天星巴克38'"
+page: ["记一笔", "首页", "*"]
+type: write
+mode: workflow
+version: "2.0.0"
+trigger: "用户表达记账意图时触发。示例：'午饭花了30'、'打车15块'、'买了杯咖啡28元'、'昨天超市消费200'"
+mandatory_tool: create_bill
+forbidden_without_tool: ["已记录", "记好了", "已创建", "记上了"]
+reply_guide: "基于 Tool 返回的 message 润色回复，可以加 emoji，但金额和日期必须与 Tool 返回一致"
+params:
+  - name: amount
+    type: float
+    required: true
+    desc: "金额"
+  - name: category
+    type: string
+    required: false
+    desc: "分类，缺失时由 Tool 层根据商户推断"
+    default_from_memory: true
+  - name: merchant
+    type: string
+    required: false
+    desc: "商户名称"
+  - name: date
+    type: date
+    required: false
+    desc: "日期，缺失时默认今天"
+    default: today
+  - name: note
+    type: string
+    required: false
+    desc: "备注"
+prompt_template: |
+  调用 create_bill 工具完成记录。不要自己声称已记录，必须等 Tool 返回成功后才能确认。

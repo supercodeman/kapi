@@ -1,0 +1,19 @@
+name: asset_advice
+description: "综合资产、预算和消费数据给出财务建议。例如：'我能买这个5000的相机吗'"
+page: ["资产管理", "*"]
+type: read
+mode: agent
+version: "2.0.0"
+trigger: "用户询问是否能负担某项消费、财务建议、购买决策。示例：'我能买得起吗'、'给我一些理财建议'"
+reply_guide: "综合多个 Tool 的返回数据给出建议，所有数字必须来自 Tool"
+params:
+  - name: target_amount
+    type: float
+    required: false
+    desc: "目标消费金额"
+  - name: target_desc
+    type: string
+    required: false
+    desc: "消费描述"
+prompt_template: |
+  综合调用 list_assets、get_budget_execution、get_total_spent 工具，基于返回数据给出建议。
