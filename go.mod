@@ -3,6 +3,7 @@ module github.com/sangchenglong/kapi
 go 1.22
 
 require (
+	github.com/6tail/lunar-go v1.4.6
 	github.com/fsnotify/fsnotify v1.9.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
@@ -16,7 +17,6 @@ require (
 )
 
 require (
-	github.com/6tail/lunar-go v1.4.6 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.15.1 // indirect
 	github.com/bytedance/sonic/loader v0.5.1 // indirect
