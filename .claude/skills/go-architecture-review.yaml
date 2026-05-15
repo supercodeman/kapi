@@ -1,0 +1,94 @@
+---
+name: go-architecture-review
+description: 以资深 Go 架构师视角对交付代码做高标准验收审查，覆盖架构合理性、代码质量、安全性、性能、可维护性
+type: feedback
+---
+
+# Go 架构师 Review Skill
+
+## 触发时机
+- 每个实施阶段（P1~P6）完成后
+- 重大代码变更后
+- 合并前的最终审查
+
+## 审查维度（按优先级）
+
+### 1. 架构合理性
+- 分层是否清晰（Router → Handler → Service → DAO → Model）
+- 是否有越层调用（Handler 直接调 DAO、Service 直接操作 DB）
+- interface 边界是否正确定义和使用
+- 子系统间耦合度是否可控
+- 是否符合"可拆分的单体"设计原则
+
+### 2. 安全性
+- SQL 注入防护：参数化查询、排序字段白名单
+- 认证鉴权：JWT 算法白名单、Token 过期检查、user_id 注入和传递
+- 多租户隔离：所有数据查询是否带 user_id 条件
+- 输入校验：Handler 层参数绑定、Tool 层参数校验
+- 密码处理：bcrypt + SHA256 预哈希
+- WebSocket 安全：Origin 校验、消息大小限制
+
+### 3. 错误处理
+- 所有外部调用（DB、Redis、Milvus、LLM API）是否检查 error
+- error 是否被静默吞掉（`_, _ = xxx`）
+- 是否有合适的错误包装（`fmt.Errorf("context: %w", err)`）
+- 用户可见的错误信息是否安全（不泄露内部细节）
+
+### 4. 并发安全
+- 共享状态是否有锁保护（sync.RWMutex / sync.Mutex）
+- goroutine 是否有超时控制和 panic recovery
+- channel 是否有 buffer 和关闭处理
+- 是否存在 goroutine 泄漏风险
+
+### 5. 资源管理
+- DB 连接池配置是否合理
+- Redis 连接是否正确关闭
+- WebSocket 连接注册/注销是否配对
+- context 是否正确传递和取消
+
+### 6. 数据一致性
+- 写操作是否记录 Operation Log
+- 软删除是否一致执行
+- 记忆更新是否与业务操作同步
+- 缓存失效策略是否正确
+
+### 7. 可测试性
+- Service 层是否依赖 interface（可 mock）
+- 关键逻辑是否有单元测试覆盖
+- 测试是否验证行为而非实现细节
+
+### 8. 代码规范
+- 命名是否清晰准确
+- 单文件是否超过 500 行
+- 是否遵循 DRY/KISS/YAGNI
+- 注释是否必要且准确
+
+## 输出格式
+
+```markdown
+# [阶段名] 架构师 Review 报告
+
+## 验收结论：通过 / 有条件通过 / 不通过
+
+## Critical（阻断性问题，必须修复后才能继续）
+- [C1] 问题描述 — 文件:行号 — 修复建议
+
+## Important（重要问题，应在当前阶段修复）
+- [I1] 问题描述 — 文件:行号 — 修复建议
+
+## Minor（建议改进，可纳入后续优化）
+- [M1] 问题描述 — 文件:行号 — 修复建议
+
+## 亮点
+- 做得好的设计决策和实现
+
+## 跨阶段联动检查
+- 各子系统调用链是否完整
+- 数据流是否端到端可追溯
+- 错误传播路径是否合理
+```
+
+## 验收标准
+- Critical = 0 才能通过
+- Important ≤ 3 且有明确修复计划才能"有条件通过"
+- Important > 3 或有未解决的 Critical 则"不通过"

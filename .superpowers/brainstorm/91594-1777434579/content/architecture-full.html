@@ -1,0 +1,196 @@
+<h2>系统架构总览</h2>
+<p class="subtitle">完整业务交互 + AI 对话双通道架构</p>
+
+<div class="mockup">
+  <div class="mockup-header">咔皮记账 AI 助手 — 系统架构图</div>
+  <div class="mockup-body" style="padding:24px;font-size:12px;color:#e0e0e0;line-height:1.6;">
+
+    <!-- Client Layer -->
+    <div style="background:#1a1a2e;border:2px solid #4fc3f7;border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#4fc3f7;margin-bottom:12px;">Vue3 Web Client</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:120px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#888;">左栏</div>
+          <div style="font-weight:600;margin-top:4px;">页面切换器</div>
+          <div style="font-size:10px;color:#666;margin-top:2px;">6 个核心页面</div>
+        </div>
+        <div style="flex:2;min-width:180px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#888;">中栏</div>
+          <div style="font-weight:600;margin-top:4px;">对话窗口</div>
+          <div style="font-size:10px;color:#666;margin-top:2px;">流式输出 / 写操作确认</div>
+        </div>
+        <div style="flex:1.5;min-width:150px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-size:11px;color:#888;">右栏</div>
+          <div style="font-weight:600;margin-top:4px;">动态内容面板</div>
+          <div style="font-size:10px;color:#666;margin-top:2px;">图表 / 表格 / 页面数据</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 双通道 -->
+    <div style="display:flex;gap:16px;margin-bottom:16px;">
+      <div style="flex:1;text-align:center;">
+        <div style="background:#ff7043;color:#fff;border-radius:20px;padding:6px 16px;display:inline-block;font-size:11px;font-weight:600;">HTTP REST API</div>
+        <div style="font-size:10px;color:#888;margin-top:4px;">页面数据加载 / 业务 CRUD</div>
+        <div style="color:#ff7043;font-size:18px;margin-top:4px;">↕</div>
+      </div>
+      <div style="flex:1;text-align:center;">
+        <div style="background:#4fc3f7;color:#0f0f1a;border-radius:20px;padding:6px 16px;display:inline-block;font-size:11px;font-weight:600;">WebSocket / HTTP 降级</div>
+        <div style="font-size:10px;color:#888;margin-top:4px;">AI 对话 / 流式输出 / 主动推送</div>
+        <div style="color:#4fc3f7;font-size:18px;margin-top:4px;">↕</div>
+      </div>
+    </div>
+
+    <!-- Server Layer -->
+    <div style="background:#1a1a2e;border:2px solid #66bb6a;border-radius:12px;padding:16px;margin-bottom:16px;">
+      <div style="font-size:14px;font-weight:700;color:#66bb6a;margin-bottom:12px;">Go Server（单体 + 插件化）</div>
+
+      <!-- Router Layer -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:#2e3b2e;border:1px solid #66bb6a;border-radius:8px;padding:10px;">
+          <div style="font-weight:600;color:#ff7043;font-size:12px;">HTTP Router</div>
+          <div style="font-size:10px;color:#aaa;margin-top:4px;">
+            GET /api/bills — 账单列表<br>
+            GET /api/budget — 预算数据<br>
+            GET /api/assets — 资产概览<br>
+            GET /api/reports — 报表数据<br>
+            POST /api/bills — 新增账单<br>
+            PUT /api/bills/:id — 修改账单<br>
+            DELETE /api/bills/:id — 软删除
+          </div>
+        </div>
+        <div style="flex:1;background:#1a2a3e;border:1px solid #4fc3f7;border-radius:8px;padding:10px;">
+          <div style="font-weight:600;color:#4fc3f7;font-size:12px;">Connection Manager</div>
+          <div style="font-size:10px;color:#aaa;margin-top:4px;">
+            WS /ws/chat — 对话长连接<br>
+            POST /api/chat — HTTP 降级<br>
+            GET /api/chat/stream — SSE 降级<br>
+            心跳检测 / 降级恢复 / 防抖动
+          </div>
+        </div>
+      </div>
+
+      <!-- Handler/Service Layer -->
+      <div style="display:flex;gap:8px;margin-bottom:12px;">
+        <div style="flex:1;background:#2e2e1a;border:1px solid #ffd54f;border-radius:8px;padding:10px;">
+          <div style="font-weight:600;color:#ffd54f;font-size:12px;">Biz Handler + Service</div>
+          <div style="font-size:10px;color:#aaa;margin-top:4px;">
+            账单 Service<br>
+            预算 Service<br>
+            资产 Service<br>
+            报表 Service<br>
+            <span style="color:#ff7043;">→ 页面数据的常规 CRUD</span>
+          </div>
+        </div>
+        <div style="flex:1;background:#1a2a3e;border:1px solid #4fc3f7;border-radius:8px;padding:10px;">
+          <div style="font-weight:600;color:#4fc3f7;font-size:12px;">AI Engine</div>
+          <div style="font-size:10px;color:#aaa;margin-top:4px;">
+            Session Manager<br>
+            LLM Abstraction Layer<br>
+            Tool Dispatcher<br>
+            Intent Router（意图路由）<br>
+            <span style="color:#4fc3f7;">→ 可调用 Biz Service 执行写操作</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Core Modules -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:100px;background:#2a1a2e;border:1px solid #ab47bc;border-radius:8px;padding:8px;">
+          <div style="font-weight:600;color:#ab47bc;font-size:11px;">Skill Mgr</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">文件+DB<br>页面感知<br>热更新</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:#1a2e2e;border:1px solid #26c6da;border-radius:8px;padding:8px;">
+          <div style="font-weight:600;color:#26c6da;font-size:11px;">Memory Mgr</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">四层记忆<br>多租户隔离<br>语义检索</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:#2e2a1a;border:1px solid #ffa726;border-radius:8px;padding:8px;">
+          <div style="font-weight:600;color:#ffa726;font-size:11px;">Analytics</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">统计分析<br>预计算<br>预测引擎</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:#2e1a1a;border:1px solid #ef5350;border-radius:8px;padding:8px;">
+          <div style="font-weight:600;color:#ef5350;font-size:11px;">Op Logger</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">写操作日志<br>快照<br>恢复</div>
+        </div>
+        <div style="flex:1;min-width:100px;background:#1a2e1a;border:1px solid #66bb6a;border-radius:8px;padding:8px;">
+          <div style="font-weight:600;color:#66bb6a;font-size:11px;">Mock BizData</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">账单/预算<br>资产/报表<br>Mock数据</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Infrastructure -->
+    <div style="background:#1a1a2e;border:2px solid #888;border-radius:12px;padding:16px;">
+      <div style="font-size:14px;font-weight:700;color:#888;margin-bottom:12px;">Infrastructure</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:110px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-weight:600;color:#4fc3f7;">MySQL</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">Skill 定义 / 操作日志<br>记忆存储 / 业务数据</div>
+        </div>
+        <div style="flex:1;min-width:110px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-weight:600;color:#ff7043;">Redis</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">会话缓存 / 预计算<br>降级状态 / 对话历史</div>
+        </div>
+        <div style="flex:1;min-width:110px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-weight:600;color:#ab47bc;">Milvus</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">记忆向量检索<br>语义相似度匹配</div>
+        </div>
+        <div style="flex:1;min-width:110px;background:#16213e;border-radius:8px;padding:10px;text-align:center;">
+          <div style="font-weight:600;color:#66bb6a;">LLM API</div>
+          <div style="font-size:10px;color:#888;margin-top:4px;">Claude / GPT / ...<br>模型无关抽象层</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 数据流说明 -->
+<div style="margin-top:24px;">
+  <h3>关键数据流</h3>
+
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;">
+    <div style="flex:1;min-width:280px;background:rgba(255,112,67,0.1);border-left:3px solid #ff7043;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#ff7043;font-size:13px;">1. 页面数据加载（HTTP）</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        Client → HTTP Router → Biz Handler → Biz Service → Mock BizData → MySQL<br>
+        <span style="color:#888;">用户切换页面 → 加载账单/预算/资产等数据 → 右栏渲染</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:280px;background:rgba(79,195,247,0.1);border-left:3px solid #4fc3f7;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#4fc3f7;font-size:13px;">2. AI 对话（WebSocket）</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        Client → Connection Mgr → AI Engine → 意图识别 → 选择 Skill → 调用 Tool → 流式返回<br>
+        <span style="color:#888;">对话请求携带 page_context，AI Engine 据此加载对应 Skill 集</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:280px;background:rgba(255,167,38,0.1);border-left:3px solid #ffa726;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#ffa726;font-size:13px;">3. AI 触发写操作</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        AI Engine → 生成建议 → Client 确认 → AI Engine → Op Logger(记录快照) → <b>Biz Service</b>(复用业务逻辑) → Memory Mgr(更新记忆)<br>
+        <span style="color:#888;">AI 写操作复用 Biz Service，不绕过业务层，保证数据一致性</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:280px;background:rgba(171,71,188,0.1);border-left:3px solid #ab47bc;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#ab47bc;font-size:13px;">4. 统计分析查询</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        AI Engine → Analytics Engine → Redis 缓存(命中直接返回) → 未命中走实时计算 → 返回结构化数据 → Client 右栏渲染图表<br>
+        <span style="color:#888;">页面直接查看报表也走 HTTP → Analytics Engine 同一套计算逻辑</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:280px;background:rgba(38,198,218,0.1);border-left:3px solid #26c6da;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#26c6da;font-size:13px;">5. 记忆检索</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        AI Engine → Memory Mgr → L4 对话历史(Redis) → L1~L3 长期记忆(MySQL + Milvus 语义检索)<br>
+        <span style="color:#888;">每次对话前自动检索相关记忆，注入 LLM 上下文</span>
+      </div>
+    </div>
+    <div style="flex:1;min-width:280px;background:rgba(102,187,106,0.1);border-left:3px solid #66bb6a;border-radius:0 8px 8px 0;padding:12px;">
+      <div style="font-weight:600;color:#66bb6a;font-size:13px;">6. 主动推送</div>
+      <div style="font-size:12px;color:#ccc;margin-top:6px;line-height:1.6;">
+        定时任务 → Analytics Engine(预算预警/周期账单检测) → Memory Mgr(判断是否推送) → Connection Mgr → WebSocket 推送到 Client<br>
+        <span style="color:#888;">HTTP 降级模式下改为客户端轮询</span>
+      </div>
+    </div>
+  </div>
+</div>
